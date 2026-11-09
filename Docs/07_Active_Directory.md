@@ -4,13 +4,14 @@ tags:
   - homelab
   - windows-server
   - active-directory
-status: deferred
+status: planned
 ---
 
 # Active Directory
 
-> [!note] Deferred project material
-> Active Directory is outside the active HomeLab Core scope. This note is retained as pre-project reference for the separate **Enterprise Security Lab**.
+> [!note] Active project component
+> Active Directory is a core component of the Blue Team Operations Lab. Its
+> deployment and telemetry validation start in Phase A1.
 
 ## Purpose
 

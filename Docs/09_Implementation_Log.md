@@ -38,6 +38,26 @@ Use this note to record every major change, install, configuration decision, and
 
 ## Entries
 
+## 2026-11-09 - Blue Team Operations Lab scope established
+
+### Change
+
+- Defined the 24-week A1–A6 roadmap for an isolated AD, SIEM and blue-team
+  investigation lab.
+- Reworked the vault workflow instructions around evidence, KQL, detection
+  validation and sanitized portfolio cases.
+
+### Result
+
+- The inherited Proxmox and OPNsense configuration is now documented as the
+  starting infrastructure for Phase A1 rather than a deferred future project.
+
+### Related Notes
+
+- [Project Overview](01_Project_Overview.md)
+- [Project Roadmap](12_Project_Roadmap.md)
+- [SIEM and Telemetry](13_SIEM_and_Telemetry.md)
+
 ## 2026-11-09 - Documentation scope cleanup
 
 ### Change

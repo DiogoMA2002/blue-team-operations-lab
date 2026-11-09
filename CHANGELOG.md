@@ -14,6 +14,11 @@ All notable documentation and infrastructure changes should be recorded here.
 
 ### Changed
 
+- Re-scoped the vault as **Blue Team Operations Lab** and replaced the prior
+  infrastructure roadmap with the six-phase, 24-week operational roadmap.
+- Promoted Active Directory into the active project scope and added a SIEM and
+  telemetry design note with KQL-based evidence requirements.
+
 - Removed the two documentation chapters transferred to another project and
   cleaned their references from this vault.
 

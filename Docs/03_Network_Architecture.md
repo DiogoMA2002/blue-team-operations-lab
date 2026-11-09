@@ -15,7 +15,8 @@ status: active
 
 ## Scope
 
-This note documents the active **HomeLab Core** network: the home LAN, Proxmox management and services connected through `vmbr0`. The separate private enterprise network is preserved for the future **Enterprise Security Lab** and is not an active part of this project.
+This note documents inherited HomeLab Core infrastructure and the target
+isolated network for the active Blue Team Operations Lab.
 
 ## Physical Network
 
@@ -48,7 +49,20 @@ Confirm the router DHCP-pool boundaries before creating further assignments or r
 
 ### `vmbr1` — Reserved internal bridge
 
-`vmbr1` has no physical ports, host IP address or gateway. It and OPNsense VM 102 are retained as a handoff baseline and may remain powered down until the Enterprise Security Lab begins. Previous `10.10.10.0/24` configuration details remain in [OPNsense](06_OPNsense.md) as historical reference only.
+`vmbr1` has no physical ports, host IP address or gateway. It and OPNsense VM
+102 form the starting point for the Blue Team Operations Lab.
+
+### Target Blue Team Lab — `10.10.10.0/24`
+
+| Role | Planned address | Purpose |
+| --- | --- | --- |
+| OPNsense LAN | `10.10.10.1` | Gateway, firewall and future log source |
+| AD DS / DNS | `10.10.10.10` | Identity, DNS and directory telemetry |
+| SIEM | `10.10.10.20` | Central log analysis and KQL workflow |
+| Windows endpoint | DHCP or reserved address | Endpoint telemetry and controlled tests |
+
+All target addresses require confirmation during Phase A1; this table is a
+design baseline, not a record of deployed services.
 
 ## Core Network Objectives
 
@@ -58,7 +72,8 @@ Confirm the router DHCP-pool boundaries before creating further assignments or r
 
 ## Future Project Boundary
 
-**Enterprise Security Lab** will separately document its own Active Directory, SIEM, segmentation, VPN and security-testing architecture. It may reuse the Proxmox host, `vmbr1` and OPNsense VM 102.
+The Blue Team Operations Lab will use the Proxmox host, `vmbr1` and OPNsense VM
+102 for Active Directory, SIEM, telemetry, investigations and controlled tests.
 
 ## Related Notes
 
@@ -66,5 +81,7 @@ Confirm the router DHCP-pool boundaries before creating further assignments or r
 - [Pi-hole](05_Pi-hole.md)
 - [OPNsense](06_OPNsense.md)
 - [Docker](08_Docker.md)
+- [Active Directory](07_Active_Directory.md)
+- [SIEM and Telemetry](13_SIEM_and_Telemetry.md)
 - [Project Roadmap](12_Project_Roadmap.md)
 - [TODO](../TODO.md)
