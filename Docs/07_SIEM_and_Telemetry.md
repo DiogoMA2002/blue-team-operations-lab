@@ -35,5 +35,5 @@ workflow.
 
 - [Project Overview](01_Project_Overview.md)
 - [Network Architecture](03_Network_Architecture.md)
-- [Active Directory](07_Active_Directory.md)
-- [Project Roadmap](12_Project_Roadmap.md)
+- [Active Directory](06_Active_Directory.md)
+- [Project Roadmap](08_Project_Roadmap.md)

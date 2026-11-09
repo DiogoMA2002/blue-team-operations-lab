@@ -1,4 +1,4 @@
----
+﻿---
 title: Blue Team Operations Lab TODO
 tags:
   - blue-team
@@ -13,7 +13,7 @@ status: active
 
 - [ ] Confirm the target SIEM and its KQL workflow
 - [ ] Power on and validate OPNsense VM 102 and `vmbr1`
-- [ ] Deploy an Active Directory domain controller with DNS
+- [x] Deploy `DC01` (`lab.internal`) as the Active Directory domain controller with DNS
 - [ ] Deploy and domain-join a Windows client
 - [ ] Configure endpoint and Windows event telemetry ingestion
 - [ ] Validate time synchronization, host identity and log arrival
@@ -38,3 +38,5 @@ status: active
 - [ ] Create a reusable investigation-case template
 - [ ] Create a telemetry-source inventory
 - [ ] Create a detection and KQL-query register
+
+

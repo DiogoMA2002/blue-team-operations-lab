@@ -40,7 +40,7 @@ Personal home-LAN and media services remain outside the blue-team lab scope.
 
 - [Network Architecture](03_Network_Architecture.md)
 - [Proxmox](04_Proxmox.md)
-- [OPNsense](06_OPNsense.md)
-- [Active Directory](07_Active_Directory.md)
-- [SIEM and Telemetry](13_SIEM_and_Telemetry.md)
-- [Project Roadmap](12_Project_Roadmap.md)
+- [OPNsense](05_OPNsense.md)
+- [Active Directory](06_Active_Directory.md)
+- [SIEM and Telemetry](07_SIEM_and_Telemetry.md)
+- [Project Roadmap](08_Project_Roadmap.md)

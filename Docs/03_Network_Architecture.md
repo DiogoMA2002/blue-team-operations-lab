@@ -9,13 +9,13 @@ status: active
 
 # Network Architecture
 
-## Current Architecture Diagram
+## Target Blue Team Architecture
 
-![HomeLab Core Architecture](../001-Attachments/HomeLab-Core-Architecture.png)
+![Blue Team Operations Lab Network](../001-Attachments/Blue-Team-Operations-Network-Architecture.png)
 
 ## Scope
 
-This note documents inherited HomeLab Core infrastructure and the target
+This note documents inherited infrastructure and the target
 isolated network for the active Blue Team Operations Lab.
 
 ## Physical Network
@@ -27,11 +27,12 @@ isolated network for the active Blue Team Operations Lab.
 | PC1 / PC2 | Physical clients | Home-LAN clients |
 | Homelab Server | Proxmox host | Runs core services and preserved lab VMs |
 
-## Active Virtual Network
+## Inherited Uplink Network
 
 ### `vmbr0` — Home LAN bridge
 
-Physical bridge for Proxmox management, Pi-hole and `media-docker`. The OPNsense WAN is also connected here while VM 102 is retained for later reuse.
+Physical bridge for Proxmox management and the OPNsense WAN interface. It
+provides the lab's upstream Internet access through the home router.
 
 ### Physical LAN — `192.168.0.0/23`
 
@@ -39,13 +40,11 @@ Physical bridge for Proxmox management, Pi-hole and `media-docker`. The OPNsense
 | --- | --- | --- |
 | NOS Router | `192.168.1.1/23` | Existing gateway, DHCP and DNS |
 | Proxmox (`pve01.lab.internal`) | `192.168.1.10/23` | Static |
-| Pi-hole | `192.168.1.20/23` | Static |
-| Media Docker VM | `192.168.1.30/23` | Planned reservation |
 | OPNsense WAN | DHCP; `192.168.1.233/23` observed | Preserved future-lab VM |
 
 Confirm the router DHCP-pool boundaries before creating further assignments or reservations.
 
-## Preserved Future-Lab Network
+## Isolated Lab Network
 
 ### `vmbr1` — Reserved internal bridge
 
@@ -64,13 +63,14 @@ Confirm the router DHCP-pool boundaries before creating further assignments or r
 All target addresses require confirmation during Phase A1; this table is a
 design baseline, not a record of deployed services.
 
-## Core Network Objectives
+## Blue Team Network Objectives
 
-- Keep Proxmox, Pi-hole and media services stable and private on the home LAN.
-- Confirm stable addressing for `media-docker`.
-- Improve backup and recovery before exposing services remotely.
+- Keep the enterprise lab isolated on `vmbr1`.
+- Permit only necessary lab egress through OPNsense.
+- Collect time-aligned identity, endpoint and firewall telemetry in the SIEM.
+- Do not add router port forwards; administration remains on the local network.
 
-## Future Project Boundary
+## Project Boundary
 
 The Blue Team Operations Lab will use the Proxmox host, `vmbr1` and OPNsense VM
 102 for Active Directory, SIEM, telemetry, investigations and controlled tests.
@@ -78,10 +78,9 @@ The Blue Team Operations Lab will use the Proxmox host, `vmbr1` and OPNsense VM
 ## Related Notes
 
 - [Proxmox](04_Proxmox.md)
-- [Pi-hole](05_Pi-hole.md)
-- [OPNsense](06_OPNsense.md)
-- [Docker](08_Docker.md)
-- [Active Directory](07_Active_Directory.md)
-- [SIEM and Telemetry](13_SIEM_and_Telemetry.md)
-- [Project Roadmap](12_Project_Roadmap.md)
+- [OPNsense](05_OPNsense.md)
+- [Active Directory](06_Active_Directory.md)
+- [SIEM and Telemetry](07_SIEM_and_Telemetry.md)
+- [Project Roadmap](08_Project_Roadmap.md)
 - [TODO](../TODO.md)
+

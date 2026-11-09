@@ -15,10 +15,10 @@ status: active
 - [Project Overview](Docs/01_Project_Overview.md)
 - [Network Architecture](Docs/03_Network_Architecture.md)
 - [Proxmox](Docs/04_Proxmox.md)
-- [OPNsense](Docs/06_OPNsense.md)
-- [Active Directory](Docs/07_Active_Directory.md)
-- [SIEM and Telemetry](Docs/13_SIEM_and_Telemetry.md)
-- [Project Roadmap](Docs/12_Project_Roadmap.md)
+- [OPNsense](Docs/05_OPNsense.md)
+- [Active Directory](Docs/06_Active_Directory.md)
+- [SIEM and Telemetry](Docs/07_SIEM_and_Telemetry.md)
+- [Project Roadmap](Docs/08_Project_Roadmap.md)
 - [TODO](TODO.md)
 
 ## Operational Records
@@ -29,8 +29,8 @@ status: active
 - [CHANGELOG](CHANGELOG.md)
 - [Claudian Instructions](Claudian_Instructions.md)
 
-## Inherited Infrastructure Reference
+## Infrastructure Reference
 
 - [Hardware Inventory](Docs/02_Hardware_Inventory.md)
-- [Pi-hole](Docs/05_Pi-hole.md)
-- [Docker](Docs/08_Docker.md)
+- [Proxmox](Docs/04_Proxmox.md)
+- [OPNsense](Docs/05_OPNsense.md)
