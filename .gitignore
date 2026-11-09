@@ -1,0 +1,26 @@
+# Ignorar tudo na raiz
+/*
+
+# Permitir documentação
+!/Docs/
+!/Excalidraw/
+!/Tags/
+!/001-Attachments/
+
+# Permitir ficheiros Markdown na raiz
+!/*.md
+Claudian_Instructions.md
+Credentials.md
+# Permitir o próprio .gitignore
+!/.gitignore
+
+# Ignorar ficheiros temporários e sensíveis
+**/.DS_Store
+**/Thumbs.db
+**/desktop.ini
+**/*.tmp
+**/*.bak
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
