@@ -1,4 +1,4 @@
----
+﻿---
 title: Proxmox
 tags: [blue-team, proxmox, virtualization]
 status: active
@@ -19,14 +19,15 @@ the isolated firewall, identity, SIEM and endpoint workloads.
 | Uplink bridge | `vmbr0` |
 | Isolated lab bridge | `vmbr1`, no physical port or host address |
 | Backup storage | `Backup-320` |
-| OPNsense | VM 102; preserved baseline |
+| OPNsense | VM 102; active gateway for `vmbr1` |
+| DC01 baseline backup | Completed on 2026-11-10 to `Backup-320` |
 
 ## A1 Guest Plan
 
 | Role | Planned network | Status |
 | --- | --- | --- |
-| OPNsense VM 102 | WAN `vmbr0`; LAN `vmbr1` | Preserved; activate in A1 |
-| AD DS / DNS | `10.10.10.10` | Planned |
+| OPNsense VM 102 | WAN `vmbr0`; LAN `vmbr1` | Active; LAN gateway `10.10.10.1` |
+| AD DS / DNS (`DC01`) | `10.10.10.10` | Deployed; baseline backup completed |
 | SIEM | `10.10.10.20` | Planned |
 | Windows endpoint | `10.10.10.0/24` | Planned |
 
@@ -40,3 +41,5 @@ the isolated firewall, identity, SIEM and endpoint workloads.
 - [Network Architecture](03_Network_Architecture.md)
 - [OPNsense](05_OPNsense.md)
 - [Project Roadmap](08_Project_Roadmap.md)
+
+

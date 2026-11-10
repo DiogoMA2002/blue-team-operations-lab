@@ -30,18 +30,21 @@ services or router port forwards.
 > On 2026-11-09, `DC01` was promoted as the first domain controller for
 > `lab.internal` (`LAB`) with AD DS, DNS and Group Policy Management installed.
 
-| Validation item | Recorded result |
-| --- | --- |
-| Domain discovery | `Get-ADDomain` returned `lab.internal`; PDC emulator is `DC01.lab.internal` |
-| Static IPv4 | `10.10.10.10/24`, gateway `10.10.10.1` |
-| DNS client configuration | Local DNS only: `10.10.10.10` plus IPv6 loopback `::1` |
-| DNS health | `dcdiag /test:dns /v` passed for `lab.internal` |
-| DNS forwarding | OPNsense `10.10.10.1` (`OPNsense.lab.internal`) configured as forwarder |
-| External lookup | `time.windows.com` resolved through DNS server `10.10.10.10` |
-| Time service | Manual peer `time.windows.com,0x8` configured and Windows Time resynchronized |
+| Validation item          | Recorded result                                                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Domain discovery         | `Get-ADDomain` returned `lab.internal`; PDC emulator is `DC01.lab.internal`                                                     |
+| Static IPv4              | `10.10.10.10/24`, gateway `10.10.10.1`                                                                                          |
+| DNS client configuration | Local DNS only: `10.10.10.10` plus IPv6 loopback `::1`                                                                          |
+| DNS health               | `dcdiag /test:dns /v` passed for `lab.internal`                                                                                 |
+| DNS forwarding           | OPNsense `10.10.10.1` (`OPNsense.lab.internal`) configured as forwarder                                                         |
+| External lookup          | `time.windows.com` resolved through DNS server `10.10.10.10`                                                                    |
+| Reverse DNS              | `10.10.10.in-addr.arpa` created; PTR `10.10.10.10` resolves to `DC01.lab.internal`                                              |
+| OU structure             | Tiered administrative, user, group, workstation, server and service-account OUs created                                         |
+| Named administration     | `adm.tier0` created in `Admin Accounts/Tier 0`, assigned to `Domain Admins`, and successfully authenticated as `LAB\\adm.tier0` |
+| Time service             | Manual peer `time.windows.com,0x8` configured and Windows Time resynchronized                                                   |
+| Recovery baseline | Manual Proxmox snapshot-mode backup of VM 104 completed to `Backup-320` using ZSTD |
 
-Outstanding AD foundation work: reverse lookup zone, initial OUs, a named
-administrative account, and SIEM telemetry ingestion.
+Next AD work: deploy the SIEM and telemetry ingestion before introducing the Windows endpoint.
 ## Roles in A1
 
 - Active Directory Domain Services (AD DS)
@@ -64,17 +67,34 @@ phase.
 
 ## Initial Directory Structure
 
-Create these OUs after promotion:
+Use this deliberately small but enterprise-style OU design. It supports
+separate GPO scope, delegated administration and future detection cases without
+creating empty organisational complexity.
 
-- `OU=Servers`
-- `OU=Workstations`
-- `OU=Users`
-- `OU=Groups`
-- `OU=Service Accounts`
+```text
+lab.internal
+â”œâ”€â”€ Admin Accounts
+â”‚   â”œâ”€â”€ Tier 0
+â”‚   â”œâ”€â”€ Tier 1
+â”‚   â””â”€â”€ Tier 2
+â”œâ”€â”€ User Accounts
+â”‚   â”œâ”€â”€ Standard Users
+â”‚   â””â”€â”€ Test Users
+â”œâ”€â”€ Groups
+â”‚   â”œâ”€â”€ Role Groups
+â”‚   â””â”€â”€ Resource Groups
+â”œâ”€â”€ Workstations
+â”‚   â”œâ”€â”€ Managed
+â”‚   â””â”€â”€ Test
+â”œâ”€â”€ Servers
+â”‚   â””â”€â”€ Member Servers
+â””â”€â”€ Service Accounts
+```
 
-Use a separate named administrative account for routine administration after
-the first validation. Keep the built-in `Administrator` account as a sealed
-break-glass account; do not use it for daily work.
+Keep the built-in `Users`, `Computers` and `Domain Controllers` containers/OUs
+in place. Do not move `DC01` from `Domain Controllers`. The built-in
+`Administrator` account remains a sealed break-glass account; use separate,
+named accounts in `Admin Accounts` for administration.
 
 ## Required Validation Evidence
 
@@ -84,6 +104,32 @@ break-glass account; do not use it for daily work.
 - Evidence that a lab client uses `10.10.10.10` for DNS.
 - Windows event collection into the selected SIEM before domain-joining clients.
 
+## Test Identity Dataset
+
+The initial non-privileged lab identities and role groups are:
+
+- Users: `usr.alice`, `usr.bob`
+- Global security groups: `GG-Helpdesk`, `GG-IT-Support`
+
+These accounts must never receive domain-administrator membership. Use controlled
+user, group and membership changes as future AD-audit and SIEM investigation
+scenarios.
+## DC Audit Baseline
+
+`GPO-DC-Audit-Logging` is linked to the `Domain Controllers` OU. The following
+were configured and verified with `auditpol` on `DC01`:
+
+- Kerberos Authentication Service, Kerberos Service Ticket Operations and
+  Credential Validation: success and failure.
+- Computer, user and security-group management: success and failure.
+- Directory Service Changes: success and failure.
+- Process Creation: success and failure, with command-line inclusion enabled.
+- PowerShell Script Block Logging and Module Logging enabled.
+
+PowerShell Event ID `4104` was observed in
+`Microsoft-Windows-PowerShell/Operational` after executing a harmless
+`Get-Process` command. Do not enter secrets in commands: command-line and
+PowerShell logging can retain them.
 ## Security Baseline (after ingestion works)
 
 - Enable Advanced Audit Policy, including logon, account logon, account
@@ -98,5 +144,16 @@ break-glass account; do not use it for daily work.
 - [SIEM and Telemetry](07_SIEM_and_Telemetry.md)
 - [Implementation Log](09_Implementation_Log.md)
 - [Troubleshooting](10_Troubleshooting.md)
+
+
+
+
+
+
+
+
+
+
+
 
 
