@@ -71,25 +71,7 @@ Use this deliberately small but enterprise-style OU design. It supports
 separate GPO scope, delegated administration and future detection cases without
 creating empty organisational complexity.
 
-```text
-lab.internal
-â”œâ”€â”€ Admin Accounts
-â”‚   â”œâ”€â”€ Tier 0
-â”‚   â”œâ”€â”€ Tier 1
-â”‚   â””â”€â”€ Tier 2
-â”œâ”€â”€ User Accounts
-â”‚   â”œâ”€â”€ Standard Users
-â”‚   â””â”€â”€ Test Users
-â”œâ”€â”€ Groups
-â”‚   â”œâ”€â”€ Role Groups
-â”‚   â””â”€â”€ Resource Groups
-â”œâ”€â”€ Workstations
-â”‚   â”œâ”€â”€ Managed
-â”‚   â””â”€â”€ Test
-â”œâ”€â”€ Servers
-â”‚   â””â”€â”€ Member Servers
-â””â”€â”€ Service Accounts
-```
+![Active Directory organizational-unit structure](../001-Attachments/AD-Organizational-Unit-Structure.png)
 
 Keep the built-in `Users`, `Computers` and `Domain Controllers` containers/OUs
 in place. Do not move `DC01` from `Domain Controllers`. The built-in
@@ -144,6 +126,7 @@ PowerShell logging can retain them.
 - [SIEM and Telemetry](07_SIEM_and_Telemetry.md)
 - [Implementation Log](09_Implementation_Log.md)
 - [Troubleshooting](10_Troubleshooting.md)
+
 
 
 
