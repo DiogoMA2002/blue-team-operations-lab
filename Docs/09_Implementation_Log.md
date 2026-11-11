@@ -153,3 +153,30 @@ status: active
 
 - A recoverable baseline exists after AD, DNS, audit-policy and identity configuration.
 - A restore test and an off-host copy remain outstanding.
+
+## 2026-11-11 - SIEM01 deployed; OPNsense DNS resolver issue identified
+
+### Deployment
+
+- Created `SIEM01` (VM 105) on `vmbr1` with static address `10.10.10.20` and Ubuntu Server installed.
+
+### Issue and temporary action
+
+- External DNS resolution through OPNsense Unbound returned `SERVFAIL`, blocking Ubuntu package updates.
+- The approved temporary update-only workaround sets Cloudflare DNS at runtime with `resolvectl`; it is reverted after updates.
+
+### Follow-up
+
+- Repair OPNsense Unbound, verify the intended DC01 DNS forwarding path, then install Elastic Security.
+
+## 2026-11-11 - OPNsense Unbound resolution restored
+
+### Root cause and fix
+
+- OPNsense relied on WAN DHCP DNS and Unbound returned `SERVFAIL` for external names.
+- Configured Cloudflare upstream resolvers (`1.1.1.1`, `1.0.0.1`), disabled WAN DNS override, and restricted Unbound service access to the lab LAN.
+
+### Validation
+
+- `archive.ubuntu.com` resolved through OPNsense `10.10.10.1` and through DC01 `10.10.10.10`.
+- The intended DNS chain is restored; proceed with Elastic installation after reverting any temporary SIEM01 DNS override.

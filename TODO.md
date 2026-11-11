@@ -1,4 +1,4 @@
----
+﻿---
 title: Blue Team Operations Lab TODO
 tags:
   - blue-team
@@ -9,17 +9,17 @@ status: active
 
 # TODO
 
-## A1 — Foundation and First Investigations
+## A1 â€” Foundation and First Investigations
 
-- [ ] Confirm the target SIEM and its KQL workflow
+- [x] Select Elastic Security self-managed as the target SIEM and KQL workflow
 - [x] Power on and validate OPNsense VM 102 and `vmbr1`
 - [x] Deploy `DC01` (`lab.internal`) as the Active Directory domain controller with DNS
 - [ ] Deploy and domain-join a Windows client
-- [ ] Configure endpoint and Windows event telemetry ingestion
-- [ ] Validate time synchronization, host identity and log arrival
+- [/] Deploy and update `SIEM01` (`10.10.10.20`); Elastic installation pending
+- [x] Repair OPNsense Unbound external DNS resolution and restore the internal DNS chain
 - [ ] Complete three documented investigations
 
-## A2–A6 — Roadmap Preparation
+## A2â€“A6 â€” Roadmap Preparation
 
 - [ ] Build the KQL query library and identity investigation cases
 - [ ] Create detection test cases and a triage playbook
@@ -40,6 +40,8 @@ status: active
 - [ ] Create a reusable investigation-case template
 - [ ] Create a telemetry-source inventory
 - [ ] Create a detection and KQL-query register
+
+
 
 
 

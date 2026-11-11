@@ -1,4 +1,4 @@
-﻿---
+---
 title: Active Directory
 tags: [blue-team, windows-server, active-directory, identity]
 status: active

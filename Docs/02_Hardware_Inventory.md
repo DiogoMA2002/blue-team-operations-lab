@@ -6,12 +6,13 @@ status: active
 
 # Lab Hardware Inventory
 
-| Component | Detail | Blue Team role |
-| --- | --- | --- |
-| Proxmox host | Intel Core i7-8700, 16 GB RAM | Runs firewall, AD, SIEM and endpoints |
-| System storage | 500 GB WD_BLACK SN710 SSD | Proxmox and guest disks |
-| Backup storage | 320 GB Maxtor, `Backup-320` | Selected VM/CT backups |
-| Network | One Gigabit NIC, unmanaged switch | Lab uplink; physical VLANs unavailable |
+| Component      | Detail                            | Blue Team role                         |
+| -------------- | --------------------------------- | -------------------------------------- |
+| Proxmox host   | Intel Core i7-8700, 16 GB RAM     | Runs firewall, AD, SIEM and endpoints  |
+| System storage | 500 GB WD_BLACK SN710 SSD         | Proxmox and guest disks                |
+| Backup storage | 320 GB Maxtor, `Backup-320`       | Selected VM/CT backups                 |
+| Network        | One Gigabit NIC, unmanaged switch | Lab uplink; physical VLANs unavailable |
+|                |                                   |                                        |
 
 ## Constraints
 

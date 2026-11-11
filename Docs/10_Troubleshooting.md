@@ -69,3 +69,38 @@ status: active
 ### Prevention
 
 - On a first DC, configure the NIC to use only its own DNS address after promotion. Configure upstream resolution as a DNS forwarder, not as an alternate NIC DNS server.
+
+---
+
+## Issue: SIEM01 cannot resolve external Ubuntu repositories — Resolved
+
+### Symptoms
+
+- `apt update` stalled while connecting to Ubuntu repositories.
+- `curl` reported it could not resolve `archive.ubuntu.com`.
+- `nslookup archive.ubuntu.com 10.10.10.1` returned `SERVFAIL`.
+
+### Environment
+
+- `SIEM01` (`10.10.10.20/24`) on `vmbr1`
+- DNS design: SIEM01 → DC01 (`10.10.10.10`) → OPNsense Unbound (`10.10.10.1`)
+
+### Investigation
+
+- ICMP connectivity to OPNsense, DC01 and public IPv4 was successful.
+- The failure is DNS resolution through OPNsense, not IP addressing or basic routing.
+
+### Temporary Workaround
+
+```bash
+sudo resolvectl dns ens18 1.1.1.1 1.0.0.1
+sudo resolvectl flush-caches
+sudo apt update
+# After updates:
+sudo resolvectl revert ens18
+```
+
+### Permanent Fix
+
+- Repair OPNsense Unbound upstream resolution, test external lookup at `10.10.10.1`, then confirm resolution through `10.10.10.10`.
+
