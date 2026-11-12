@@ -1,4 +1,4 @@
-﻿---
+---
 title: Troubleshooting
 tags: [blue-team, troubleshooting]
 status: active

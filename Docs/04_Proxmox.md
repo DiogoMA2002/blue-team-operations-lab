@@ -1,4 +1,4 @@
----
+﻿---
 title: Proxmox
 tags: [blue-team, proxmox, virtualization]
 status: active
@@ -28,7 +28,7 @@ the isolated firewall, identity, SIEM and endpoint workloads.
 | --- | --- | --- |
 | OPNsense VM 102 | WAN `vmbr0`; LAN `vmbr1` | Active; LAN gateway `10.10.10.1` |
 | AD DS / DNS (`DC01`) | `10.10.10.10` | Deployed; baseline backup completed |
-| SIEM | `10.10.10.20` | Planned |
+| SIEM (`SIEM01`) | `10.10.10.20` | Ubuntu and Elasticsearch deployed; Kibana pending |
 | Windows endpoint | `10.10.10.0/24` | Planned |
 
 ## Administration
@@ -41,5 +41,6 @@ the isolated firewall, identity, SIEM and endpoint workloads.
 - [Network Architecture](03_Network_Architecture.md)
 - [OPNsense](05_OPNsense.md)
 - [Project Roadmap](08_Project_Roadmap.md)
+
 
 

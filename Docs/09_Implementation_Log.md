@@ -180,3 +180,30 @@ status: active
 
 - `archive.ubuntu.com` resolved through OPNsense `10.10.10.1` and through DC01 `10.10.10.10`.
 - The intended DNS chain is restored; proceed with Elastic installation after reverting any temporary SIEM01 DNS override.
+
+## 2026-11-12 - Elasticsearch installed on SIEM01
+
+### Deployment
+
+- Installed and enabled Elasticsearch on `SIEM01` as the single-node `blue-team-lab` cluster.
+- Configured persistent `vm.max_map_count=1048576` and a 2 GiB JVM heap cap for the constrained homelab host.
+
+### Validation
+
+- Configured the built-in `elastic` account password interactively.
+- Validated the local HTTPS endpoint using `/etc/elasticsearch/certs/http_ca.crt`.
+
+### Next step
+
+- Install and enroll Kibana, then deploy Fleet Server and Elastic Agent.
+
+## 2026-11-12 - Elasticsearch base configuration documented
+
+### Implemented baseline
+
+- Documented single-node security, TLS, service, heap and kernel-map-limit configuration for SIEM01.
+
+### Before Kibana
+
+- Validate SIEM01 NTP/timezone and restrict Elasticsearch HTTP binding to localhost when applicable.
+- Keep Elasticsearch ports `9200` and `9300` inaccessible from outside SIEM01.
