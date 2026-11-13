@@ -11,19 +11,22 @@ The goal is to demonstrate practical blue-team operations: collecting
 telemetry, detecting suspicious activity, investigating alerts, documenting
 findings and validating remediation.
 
-## Current Status — 9 November 2026
+## Current Status — 13 November 2026
 
-Phase A1 is in progress.
+Phase A1 is in progress. The Elastic management plane is operational; DC01
+telemetry enrollment is the active task.
 
 - OPNsense VM 102 provides the isolated-lab gateway on `10.10.10.1`.
 - `DC01.lab.internal` is deployed on `vmbr1` as the first domain controller
-  for `lab.internal` (`LAB`).
-- AD DS, DNS and Group Policy Management are installed.
-- The DC uses static address `10.10.10.10/24`; `dcdiag /test:dns /v` passed.
-- OPNsense `10.10.10.1` is the DNS forwarder, and Windows Time has been
-  configured and resynchronized using `time.windows.com`.
-- The SIEM selection, reverse-DNS zone, AD organisational units, endpoint and
-  telemetry collection remain next steps.
+  for `lab.internal` (`LAB`), with audited AD activity and a baseline backup.
+- `SIEM01` (`10.10.10.20`) runs Ubuntu Server, Elasticsearch, Kibana and a
+  healthy Fleet Server.
+- Kibana access is restricted through OPNsense TCP `5601` NAT to the trusted
+  administration workstation only; Elasticsearch ports are not exposed.
+- The `Windows Domain Controllers - Baseline` Fleet policy is configured with
+  System, PowerShell, PowerShell Operational and Windows Defender telemetry.
+- `DC01` has not yet been enrolled as an Elastic Agent; no endpoint/client VM
+  has been deployed.
 
 ## Lab Foundation
 
@@ -31,6 +34,7 @@ Phase A1 is in progress.
 - OPNsense VM 102: firewall and gateway for the isolated lab
 - Internal bridge: `vmbr1`; lab network: `10.10.10.0/24`
 - Domain controller: `DC01.lab.internal` (`10.10.10.10`)
+- SIEM: `SIEM01` (`10.10.10.20`)
 - Existing backup storage: `Backup-320`
 
 Personal/media services remain on the home LAN and are out of scope for this
@@ -61,10 +65,6 @@ sensitive logs must never be committed.
 - [Network Architecture](Docs/03_Network_Architecture.md)
 - [Active Directory](Docs/06_Active_Directory.md)
 - [SIEM and Telemetry](Docs/07_SIEM_and_Telemetry.md)
+- [Current Lab State](Docs/12_Current_Lab_State.md)
 - [Implementation Log](Docs/09_Implementation_Log.md)
 - [Troubleshooting](Docs/10_Troubleshooting.md)
-
-
-
-
-

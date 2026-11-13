@@ -207,3 +207,78 @@ status: active
 
 - Validate SIEM01 NTP/timezone and restrict Elasticsearch HTTP binding to localhost when applicable.
 - Keep Elasticsearch ports `9200` and `9300` inaccessible from outside SIEM01.
+
+## 2026-11-13 - Kibana installed on SIEM01
+
+### Deployment
+
+- Installed Kibana on `SIEM01`, configured `server.name` as `siem01` and bound it to `10.10.10.20`.
+- Enabled and started the Kibana systemd service.
+- Generated a Kibana enrollment token locally; the secret token is not stored in the vault.
+
+### Next step
+
+- Create a source-restricted OPNsense port-forward for TCP 5601 to complete browser enrollment from the administrator workstation.
+
+## 2026-11-13 - Kibana enrolled and restricted access configured
+
+### Validation
+
+- Completed the Kibana browser enrollment with the locally generated enrollment token.
+- Configured OPNsense destination NAT from the administration workstation (`192.168.1.6`) to `SIEM01` TCP `5601`.
+- The associated WAN pass rule is source-restricted; Elasticsearch ports `9200` and `9300` remain inaccessible externally.
+
+### Next step
+
+- Sign in to Kibana with the `elastic` account and deploy Fleet Server for Elastic Agent management.
+
+## 2026-11-13 - Kibana encryption keys configured for Fleet
+
+### Remediation
+
+- Fleet initialization reported that the encrypted saved-object API key was missing.
+- Generated persistent Kibana encryption keys and configured the Encrypted Saved Objects, Reporting and Security encryption settings in `/etc/kibana/kibana.yml`.
+- Restarted Kibana. The generated keys and service-account token are secrets and were not recorded.
+
+### Next step
+
+- Confirm Fleet initializes successfully, then deploy a Fleet Server on SIEM01.
+
+## 2026-11-13 - Fleet Server deployed on SIEM01
+
+### Deployment
+
+- Installed Elastic Agent `9.5.6` (Linux x86_64) on SIEM01 in Fleet Server mode.
+- Enrolled it using the Fleet-generated `fleet-server-policy` with Elasticsearch local to SIEM01.
+- Fleet Server listens internally at `https://10.10.10.20:8220`; no WAN/NAT exposure was created for this port.
+
+### Next step
+
+- Confirm the Fleet Server agent is Healthy in Kibana, then create and enroll the DC01 agent policy.
+
+### Fleet Server validation
+
+- Verified in Kibana Fleet > Agents that `siem01` is Healthy under Fleet Server Policy.
+- Elastic Agent version: `9.5.6`; reported memory use: approximately `119 MB`.
+
+## 2026-11-13 - DC01 Fleet policy created
+
+- Created `Windows Domain Controllers - Baseline` (revision 1) for DC01.
+- Configured FQDN host-name display, Default space and `default` namespace.
+- The policy is not yet assigned to DC01; review its initial integration and add the Windows telemetry integration next.
+
+## 2026-11-13 - DC01 Windows telemetry integration configured
+
+- Added `Windows Security Telemetry - DC01` to the DC agent policy (policy revision 2).
+- Enabled PowerShell, PowerShell Operational and Windows Defender Operational collection.
+- Deferred Sysmon Operational collection until Sysmon is installed; disabled raw-event preservation to control storage use.
+
+### Next step
+
+- Enroll DC01 with the Windows Domain Controllers - Baseline policy.
+
+## 2026-11-13 - Continuation checkpoint recorded
+
+- Updated project status, TODO and roadmap to reflect the deployed Elastic management plane and pending DC01 agent enrollment.
+- Created `Docs/12_Current_Lab_State.md` as the sanitized resumption checkpoint.
+- No passwords, API keys, enrollment tokens, encryption keys or service tokens were recorded.
