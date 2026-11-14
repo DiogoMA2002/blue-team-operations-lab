@@ -61,3 +61,20 @@ server again uses `10.10.10.10`.
 - [SIEM and Telemetry](07_SIEM_and_Telemetry.md)
 
 
+
+## DNS Routing Baseline — 2026-11-14
+
+Unbound is the permanent resolver for `SIEM01`. A domain-specific Query
+Forwarding entry routes `lab.internal` to the AD DNS server `10.10.10.10:53`.
+All other DNS names use OPNsense Unbound's upstream resolution.
+
+```text
+SIEM01 → OPNsense Unbound (10.10.10.1)
+          ├─ lab.internal → DC01 DNS (10.10.10.10)
+          └─ external names → configured upstream resolvers
+```
+
+This avoids reliance on DC01 for SIEM01 Internet access while preserving AD
+namespace resolution when DC01 is available. When DC01 is powered off,
+`lab.internal` lookups time out by design; external resolution remains
+available.

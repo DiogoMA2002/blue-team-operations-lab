@@ -152,3 +152,32 @@ collects the PowerShell, PowerShell Operational and Windows Defender Operational
 channels. Sysmon collection is intentionally deferred until Sysmon is deployed
 on DC01. Raw `event.original` preservation remains disabled to conserve the
 100 GiB SIEM disk.
+
+## 2026-11-14 Fleet Server Recovery
+
+After a stale Fleet Server record became Offline, the locally installed Elastic
+Agent was re-enrolled in Fleet Server mode using a newly generated bootstrap
+service token and the existing `fleet-server-policy`. The active `siem01`
+record is Healthy again (Elastic Agent `9.5.6`). A separate, older Offline
+`siem01` record remains in Fleet and must be removed as stale inventory; do not
+remove the Healthy record.
+
+The Quick Start certificate remains self-signed with SAN `DNS:siem01` only;
+its validation does not match the `10.10.10.20` address. A CA-issued
+certificate containing `10.10.10.20` and `siem01.lab.internal` remains a
+hardening task before a production-like deployment.
+
+## SIEM01 DNS Resilience — 2026-11-14
+
+SIEM01 Netplan now uses OPNsense Unbound (`10.10.10.1`) as its persistent DNS
+server, with search domain `lab.internal`. OPNsense Query Forwarding routes
+`lab.internal` queries to DC01 (`10.10.10.10:53`). This design preserves
+external package, Elastic Package Registry and Fleet connectivity when DC01 is
+off, while resolving the AD namespace whenever DC01 is online.
+
+Validated after applying Netplan:
+
+- `resolvectl status` reports `10.10.10.1` as the current and only DNS server.
+- `archive.ubuntu.com` resolves successfully.
+- With DC01 powered off, `dc01.lab.internal` correctly times out through
+  OPNsense; this is expected until the DC is online.

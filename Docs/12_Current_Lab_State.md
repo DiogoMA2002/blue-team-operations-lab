@@ -1,4 +1,4 @@
-﻿---
+---
 title: Current Lab State
 tags:
   - blue-team
@@ -76,3 +76,18 @@ WAN.
 - [Active Directory](06_Active_Directory.md)
 - [Implementation Log](09_Implementation_Log.md)
 - [Troubleshooting](10_Troubleshooting.md)
+
+## 2026-11-14 Recovery Update
+
+Fleet Server bootstrap was recovered after the prior `siem01` record went
+Offline. The current active `siem01` agent is Healthy under `Fleet Server
+Policy` (Elastic Agent `9.5.6`). Fleet temporarily shows two `siem01` records:
+retain the Healthy record and remove the stale Offline record before enrolling
+DC01. No secrets were retained in project documentation.
+
+## 2026-11-14 DNS Resilience Update
+
+SIEM01 DNS is now persistent through Netplan: `10.10.10.1` with search domain
+`lab.internal`. OPNsense Query Forwarding sends `lab.internal` to DC01 on
+`10.10.10.10:53`; all other lookups use Unbound's external resolution. This
+removes the SIEM01 dependency on a powered-on DC01 for Internet access.

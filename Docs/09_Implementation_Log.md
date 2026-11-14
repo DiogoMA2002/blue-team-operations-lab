@@ -282,3 +282,33 @@ status: active
 - Updated project status, TODO and roadmap to reflect the deployed Elastic management plane and pending DC01 agent enrollment.
 - Created `Docs/12_Current_Lab_State.md` as the sanitized resumption checkpoint.
 - No passwords, API keys, enrollment tokens, encryption keys or service tokens were recorded.
+
+## 2026-11-14 - Fleet Server bootstrap recovered
+
+### Incident and recovery
+
+- The original `siem01` Fleet Server record was Offline while the local Fleet Server endpoint was reachable and reported Healthy.
+- Re-enrolled the already installed Elastic Agent in Fleet Server mode using the existing `fleet-server-policy` and a newly generated bootstrap service token.
+- Verified a new `siem01` Fleet Server record is Healthy in Kibana (Elastic Agent `9.5.6`).
+
+### Follow-up
+
+- Remove the stale Offline `siem01` record only; retain the Healthy record.
+- Replace the Quick Start self-signed Fleet Server certificate with a CA-issued certificate containing the internal IP and FQDN before treating Fleet as production-like.
+
+## 2026-11-14 - SIEM01 DNS made resilient to DC01 downtime
+
+### Change
+
+- Updated SIEM01 Netplan DNS to use OPNsense Unbound (`10.10.10.1`) persistently while retaining `lab.internal` as the search domain.
+- Replaced the OPNsense local DNSmasq forwarding for `lab.internal` with Query Forwarding to AD DNS (`10.10.10.10:53`).
+
+### Validation
+
+- `resolvectl status` shows `10.10.10.1` as SIEM01's current and only resolver.
+- `archive.ubuntu.com` resolves successfully through the new path.
+- With DC01 intentionally powered off, `dc01.lab.internal` times out while external resolution remains available, as designed.
+
+### Next step
+
+- Power on DC01 and validate `dc01.lab.internal` resolution through OPNsense, then enroll DC01 in Fleet.
