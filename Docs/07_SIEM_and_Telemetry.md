@@ -1,183 +1,117 @@
 ---
 title: SIEM and Telemetry
-tags:
-  - blue-team
-  - siem
-  - telemetry
-  - kql
+tags: [blue-team, siem, telemetry, kql]
 status: in-progress
+updated: 2026-11-14
 ---
 
 # SIEM and Telemetry
 
-## Purpose
+## Purpose and Status
 
-Provide centralized, time-aligned telemetry for blue-team detection and
-investigation. The selected SIEM must support KQL for the planned query
-workflow.
+Document the current Elastic configuration and collection requirements.
+The management plane and agent recovery are validated for one controlled reboot.
+Controlled DC01 event ingestion remains unvalidated; Healthy is not proof of collection.
 
-## A1 Deployment Status
+## Current Baseline
 
-| Item | Status |
+| Item | Recorded configuration |
 | --- | --- |
-| Platform | Elastic Security self-managed — selected |
-| VM | `SIEM01` / VM 105 on `vmbr1` |
-| Network | Static `10.10.10.20/24`; gateway `10.10.10.1`; intended DNS `10.10.10.10` |
-| Operating system | Ubuntu Server installed and updated |
-| Elasticsearch | Installed, enabled and validated locally over HTTPS |
-| Elasticsearch resources | JVM heap capped at 2 GiB; `vm.max_map_count=1048576` configured persistently |
-| DNS resolution | Resolved; intended internal DNS chain validated |
-| Temporary workaround | Used for package update; revert it with `resolvectl revert ens18` if still active |
+| Platform | Elastic Security self-managed |
+| Host | SIEM01, VM 105, Ubuntu Server, vmbr1 |
+| Network | 10.10.10.20/24; gateway 10.10.10.1 |
+| DNS | Persistent Netplan resolver 10.10.10.1; search domain lab.internal |
+| Elasticsearch | Single-node blue-team-lab; node siem01; HTTPS/authentication enabled |
+| Resources | Fixed 2 GiB heap (-Xms2g/-Xmx2g); persistent vm.max_map_count=1048576 |
+| HTTP listener | Internal lab access on 10.10.10.20:9200; configured http.host: 0.0.0.0 |
+| Kibana | Installed/enrolled; bound to 10.10.10.20:5601; persistent encryption keys |
+| Fleet Server | Elastic Agent 9.5.6; fleet-server-policy; Fleet Server Policy revision 3 |
+| Fleet integration | One Fleet Server integration, fleet_server-1 |
+| Agent-facing Fleet URL | https://10.10.10.20:8220 |
+| Local Fleet endpoint | https://127.0.0.1:8221, loopback only |
+| Fleet data output | https://10.10.10.20:9200, managed through xpack.fleet.outputs in kibana.yml |
 
-Do not install Elastic until the operating system has been updated. Restore the
-intended internal DNS chain after the OPNsense resolver remediation.
-## Elasticsearch Baseline
+Do not revert Elasticsearch to loopback-only HTTP binding: remote DC01 needs
+internal TCP 9200. Loopback can be used for SIEM01-local bootstrap connections,
+but must not be the shared data output for remote agents.
 
-Elasticsearch is installed on `SIEM01` as a single-node `blue-team-lab`
-cluster. It runs as a systemd service and is locally validated over HTTPS using
-the generated HTTP CA certificate. The built-in `elastic` account password was
-set interactively and is not recorded in this vault.
+Kibana access uses source-restricted OPNsense WAN TCP 5601 DNAT from the trusted
+administration workstation to SIEM01. No WAN/NAT exposure is configured for
+Elasticsearch 9200/9300 or Fleet 8220/8221. SIEM01 has no WAN-facing NIC.
+Restricting listener access further with the host firewall remains a hardening task.
 
-Kibana, Fleet Server, Elastic Agent enrollment and source telemetry remain
-pending.
-## Elasticsearch Base Configuration
+## DNS Resilience
 
-### Implemented
+SIEM01 uses OPNsense Unbound for external resolution. Query Forwarding sends
+lab.internal to DC01 at 10.10.10.10:53. External package/registry resolution was
+validated with DC01 off; AD names remain unavailable until DC01 is online.
+DC01 itself continues to use its own AD DNS, forwarding external queries to OPNsense.
 
-- Single-node cluster: `blue-team-lab`; node: `siem01`.
-- Elastic security auto-configuration, generated HTTP CA certificate and local
-  authentication enabled.
-- Elasticsearch systemd service enabled and HTTPS endpoint validated locally.
-- Persistent `vm.max_map_count=1048576`.
-- JVM heap fixed at `2 GiB` (`-Xms2g`, `-Xmx2g`) to preserve host memory.
+## DC01 Collection Policy
 
-### Required before Kibana
+Policy: Windows Domain Controllers - Baseline, revision 3, default namespace.
+Agent identity is displayed as DC01.lab.internal.
 
-- Confirm NTP synchronization and `Europe/Lisbon` timezone on SIEM01.
-- Confirm whether `http.host` is `0.0.0.0`; if so, bind it to `127.0.0.1` so
-  Elasticsearch remains local to SIEM01. Kibana and Fleet will use local access.
-- Do not expose Elasticsearch TCP ports `9200` or `9300` through OPNsense.
+- System integration: Security, System and Application channels.
+- Windows integration: Windows Security Telemetry - DC01 (recorded v3.13.1),
+  collecting PowerShell, PowerShell Operational and Windows Defender Operational.
+- Sysmon Operational is deferred until Sysmon is installed.
+- Raw event.original preservation is disabled to conserve storage.
 
-### Deferred
+This is configured collection scope, not evidence that a controlled event has
+arrived. AD auditing and local 4104/4728/4729 evidence are documented in
+[Active Directory](06_Active_Directory.md).
 
-- Configure data-stream lifecycle/retention only after source integrations create
-  data streams; target retention is 14–30 days for the 100 GiB lab disk.
-## Required Sources
+## TLS, Secrets and Startup
 
-| Source | Minimum evidence |
-| --- | --- |
-| Active Directory / domain controller | Authentication, account and directory changes |
-| Windows endpoint | Security events, PowerShell logging and process telemetry |
-| OPNsense | Firewall allow/block events and network context |
-| SIEM platform | Searchable ingestion, timestamps and KQL queries |
+Elasticsearch uses its generated HTTP CA and local authentication. Kibana has
+persistent Encrypted Saved Objects, Reporting and Security encryption keys.
+Passwords, service/enrollment tokens and encryption keys are not stored here.
 
-## Validation Criteria
+Fleet retains the lab Quick Start/self-signed certificate arrangement. DC01 was
+enrolled using the lab certificate exception; a lab-CA certificate covering the
+internal IP and FQDN is still required for production-like verification. Earlier
+inspection found SAN DNS:siem01 only; the certificate generated during recovery
+has not been independently re-inspected. Do not infer its current SANs.
 
-- Each source has a documented hostname, log type and ingestion status.
-- Events arrive with usable timestamps and can be correlated across systems.
-- A known test event is found by KQL before a case is marked complete.
+The recorded startup guard consists of /usr/local/sbin/wait-for-elasticsearch and
+/etc/systemd/system/elastic-agent.service.d/10-wait-for-elasticsearch.conf. It
+waits for the local Elasticsearch HTTPS authentication challenge and retries
+service startup. It did not, by itself, resolve the later duplicate-input
+readiness deadlock. Its exact script was not reviewed during this assessment.
+
+## Recovery Validation - 2026-11-14
+
+Duplicate integration cleanup followed by one controlled Fleet Server-mode
+enrollment restored check-in. After a controlled reboot, SIEM01 was Healthy
+Connected at 21:54:59 guest time with 4 minutes uptime. DC01 briefly reported EOF,
+then recovered without reported manual intervention. The final Kibana screenshot
+shows both active agents Healthy on revision 3 with recent activity.
+
+See [Troubleshooting](10_Troubleshooting.md#fleet-server-check-in-blocked-after-siem01-reboot)
+for the mechanism, evidence, exact inventory IDs and limitations.
+The old Offline siem01 record is historical; its retirement is not yet confirmed.
+
+## Remaining Validation and Capacity Work
+
+1. Generate a harmless controlled DC01 event, verify it locally and find the
+   corresponding event in Kibana using KQL within a recorded time window.
+2. Confirm timestamps, source identity and usable evidence before marking ingestion validated.
+3. Maintain a telemetry-source inventory and extend collection to the planned
+   Windows client and OPNsense firewall logs.
+4. Confirm time synchronization/timezone on SIEM01; retain Europe/Lisbon as the
+   intended timezone, not an independently verified current setting.
+5. Define retention only after data streams and ingestion volume are known.
+   The earlier plan refers to a 100 GiB disk, but df showed a 48G root filesystem,
+   16G used and 30G available during diagnosis. VM disk and filesystem/LV sizes
+   are distinct and require confirmation. The previous 14-30 day retention goal
+   is a planning target, not an applied or capacity-validated setting.
 
 ## Related Notes
 
-- [Project Overview](01_Project_Overview.md)
+- [Current Lab State](12_Current_Lab_State.md)
 - [Network Architecture](03_Network_Architecture.md)
 - [Active Directory](06_Active_Directory.md)
+- [Implementation Log](09_Implementation_Log.md)
+- [Troubleshooting](10_Troubleshooting.md)
 - [Project Roadmap](08_Project_Roadmap.md)
-
-
-
-
-
-## Kibana Deployment
-
-Kibana is installed and enabled on `SIEM01`. It is configured to listen on
-`10.10.10.20` for an explicitly restricted administrator connection. Its
-Elasticsearch enrollment token was generated locally and is secret; it is not
-stored in this vault.
-
-### Next action
-
-Create an OPNsense WAN port-forward for TCP `5601` to `10.10.10.20:5601`,
-restricted to the single trusted administration workstation. Complete Kibana's
-browser enrollment with the locally generated token, then sign in using the
-`elastic` account. Do not forward Elasticsearch ports `9200` or `9300`.
-
-### Enrollment status
-
-Kibana enrollment with Elasticsearch was completed successfully through the
-restricted OPNsense TCP `5601` port-forward. The rule permits only the
-administration workstation (`192.168.1.6`) to reach `10.10.10.20:5601` via the
-OPNsense WAN address. Elasticsearch ports `9200` and `9300` remain unexposed.
-
-## Fleet Cryptographic Baseline
-
-Generated persistent Kibana encryption keys with
-`kibana-encryption-keys generate` and configured the generated values for
-Encrypted Saved Objects, Reporting and Security in `/etc/kibana/kibana.yml`.
-Kibana was restarted. The key material is secret and is deliberately not stored
-in this vault. This enables Fleet to encrypt and persist its API keys across
-Kibana restarts.
-
-## Fleet Server
-
-Fleet Server is installed on `SIEM01` through the Fleet-generated
-`fleet-server-policy` and listens on the internal endpoint
-`https://10.10.10.20:8220`. The bootstrap connects to local Elasticsearch at
-`https://127.0.0.1:9200`. No NAT or WAN rule is configured for TCP `8220`.
-
-The Quick Start deployment uses a self-signed Fleet Server certificate. It is
-appropriate only for the isolated lab bootstrap; future endpoint enrollment
-will require `--insecure` until the certificate is replaced with one issued by
-a lab CA. Fleet service and enrollment tokens are secrets and are not recorded.
-
-### Validation
-
-The Fleet Server Elastic Agent is healthy in Kibana: host `siem01`, policy
-`Fleet Server Policy`, version `9.5.6`. Fleet reports approximately `119 MB`
-of agent memory use. The next telemetry source is `DC01`.
-
-## DC01 Agent Policy
-
-Created Fleet agent policy `Windows Domain Controllers - Baseline` (revision 1)
-for DC01 with description `Baseline telemetry for DC01`, Default space and
-`default` namespace. Agent host identification is configured to use FQDN. The
-policy currently contains one initial integration; its configuration will be
-reviewed before adding Windows security-event collection.
-
-### Windows telemetry integrations
-
-Policy revision 2 includes the base System integration and `Windows Security
-Telemetry - DC01` (Windows integration v3.13.1). The Windows integration
-collects the PowerShell, PowerShell Operational and Windows Defender Operational
-channels. Sysmon collection is intentionally deferred until Sysmon is deployed
-on DC01. Raw `event.original` preservation remains disabled to conserve the
-100 GiB SIEM disk.
-
-## 2026-11-14 Fleet Server Recovery
-
-After a stale Fleet Server record became Offline, the locally installed Elastic
-Agent was re-enrolled in Fleet Server mode using a newly generated bootstrap
-service token and the existing `fleet-server-policy`. The active `siem01`
-record is Healthy again (Elastic Agent `9.5.6`). A separate, older Offline
-`siem01` record remains in Fleet and must be removed as stale inventory; do not
-remove the Healthy record.
-
-The Quick Start certificate remains self-signed with SAN `DNS:siem01` only;
-its validation does not match the `10.10.10.20` address. A CA-issued
-certificate containing `10.10.10.20` and `siem01.lab.internal` remains a
-hardening task before a production-like deployment.
-
-## SIEM01 DNS Resilience — 2026-11-14
-
-SIEM01 Netplan now uses OPNsense Unbound (`10.10.10.1`) as its persistent DNS
-server, with search domain `lab.internal`. OPNsense Query Forwarding routes
-`lab.internal` queries to DC01 (`10.10.10.10:53`). This design preserves
-external package, Elastic Package Registry and Fleet connectivity when DC01 is
-off, while resolving the AD namespace whenever DC01 is online.
-
-Validated after applying Netplan:
-
-- `resolvectl status` reports `10.10.10.1` as the current and only DNS server.
-- `archive.ubuntu.com` resolves successfully.
-- With DC01 powered off, `dc01.lab.internal` correctly times out through
-  OPNsense; this is expected until the DC is online.

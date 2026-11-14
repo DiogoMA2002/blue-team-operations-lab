@@ -44,7 +44,7 @@ services or router port forwards.
 | Time service             | Manual peer `time.windows.com,0x8` configured and Windows Time resynchronized                                                   |
 | Recovery baseline | Manual Proxmox snapshot-mode backup of VM 104 completed to `Backup-320` using ZSTD |
 
-Next AD work: deploy the SIEM and telemetry ingestion before introducing the Windows endpoint.
+Next AD work: validate a controlled DC01 event in the deployed SIEM before introducing the Windows endpoint.
 ## Roles in A1
 
 - Active Directory Domain Services (AD DS)
@@ -112,13 +112,18 @@ PowerShell Event ID `4104` was observed in
 `Microsoft-Windows-PowerShell/Operational` after executing a harmless
 `Get-Process` command. Do not enter secrets in commands: command-line and
 PowerShell logging can retain them.
-## Security Baseline (after ingestion works)
+## Remaining Telemetry and Hardening Work
 
-- Enable Advanced Audit Policy, including logon, account logon, account
-  management, directory-service changes and process creation.
-- Enable PowerShell Script Block Logging and Module Logging.
-- Deploy Sysmon using a reviewed, version-controlled configuration.
-- Create GPOs gradually and record every change and its telemetry effect.
+Advanced Audit Policy, command-line capture and PowerShell logging are already
+configured as recorded above; they are not pending deployment tasks.
+
+- DC01 Elastic Agent 9.5.6 is enrolled under Windows Domain Controllers - Baseline
+  revision 3. Fleet connectivity recovered after the controlled SIEM01 reboot.
+- Verify a controlled local event in Kibana before declaring ingestion validated.
+- Deploy Sysmon later using a reviewed, version-controlled configuration; its
+  collection is currently deferred.
+- Introduce the Windows client only after DNS and telemetry validation.
+- Apply future GPO changes gradually and record their evidence and telemetry effect.
 
 ## Related Notes
 
@@ -126,17 +131,3 @@ PowerShell logging can retain them.
 - [SIEM and Telemetry](07_SIEM_and_Telemetry.md)
 - [Implementation Log](09_Implementation_Log.md)
 - [Troubleshooting](10_Troubleshooting.md)
-
-
-
-
-
-
-
-
-
-
-
-
-
-

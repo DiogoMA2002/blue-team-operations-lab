@@ -1,4 +1,4 @@
-﻿---
+---
 title: Blue Team Operations Lab Roadmap
 tags:
   - blue-team
@@ -9,16 +9,24 @@ status: active
 
 # Blue Team Operations Lab Roadmap
 
-## A1 â€” Base and First Investigations (Weeks 1â€“4)
+## Purpose and Current Checkpoint
+
+Track measurable deliverables, not a second infrastructure incident timeline.
+As of 2026-11-14, AD/DNS and the Elastic management plane are deployed. Both agents
+recovered after a controlled SIEM01 reboot and show Healthy/revision 3/recent
+Kibana activity. Controlled event ingestion, the Windows client and complete
+investigations remain pending. See [Current Lab State](12_Current_Lab_State.md).
+
+## A1 - Foundation and First Investigations (Weeks 1-4)
 
 **Outcome:** validated collection and three complete cases.
 
-- [/] Establish the isolated AD/SIEM network and host inventory (OPNsense, DC01 and SIEM01 deployed; DC01 telemetry enrollment pending)
+- [/] Establish the isolated AD/SIEM network and host inventory (OPNsense, DC01 and SIEM01 deployed; DC01 enrolled and Fleet reboot recovery validated; controlled ingestion pending)
 - [/] Deploy AD DS/DNS, a Windows client and the selected SIEM (AD DS/DNS and Elastic SIEM deployed; Windows client pending)
 - [ ] Validate identity, endpoint and Windows security telemetry
 - [ ] Complete three investigations using the evidence standard
 
-## A2 â€” Identity and Queries (Weeks 5â€“8)
+## A2 - Identity and Queries (Weeks 5-8)
 
 **Outcome:** two additional cases, KQL queries and phishing investigation.
 
@@ -26,7 +34,7 @@ status: active
 - [ ] Complete two identity-focused investigations
 - [ ] Complete a phishing investigation with documented analyst decisions
 
-## A3 â€” Detection Quality and Operations (Weeks 9â€“12)
+## A3 - Detection Quality and Operations (Weeks 9-12)
 
 **Outcome:** five tested detections, playbook, escalation and handover.
 
@@ -34,7 +42,7 @@ status: active
 - [ ] Write a triage and investigation playbook
 - [ ] Document escalation criteria and an analyst handover
 
-## A4 â€” Network Context and Remediation (Weeks 13â€“16)
+## A4 - Network Context and Remediation (Weeks 13-16)
 
 **Outcome:** firewall logs, PCAP analysis and post-remediation reassessment.
 
@@ -42,7 +50,7 @@ status: active
 - [ ] Analyze a relevant PCAP for an investigation
 - [ ] Reassess a finding after a documented remediation
 
-## A5 â€” Automation and CTI (Weeks 17â€“20)
+## A5 - Automation and CTI (Weeks 17-20)
 
 **Outcome:** normalized investigation output, integrated tool and CTI note.
 
@@ -50,7 +58,7 @@ status: active
 - [ ] Integrate one automation or enrichment tool
 - [ ] Produce one CTI note tied to observed or simulated evidence
 
-## A6 â€” Final Case and Presentation (Weeks 21â€“24)
+## A6 - Final Case and Presentation (Weeks 21-24)
 
 **Outcome:** consolidated investigation, demonstration and publishable version.
 
@@ -65,4 +73,3 @@ status: active
 - [Active Directory](06_Active_Directory.md)
 - [SIEM and Telemetry](07_SIEM_and_Telemetry.md)
 - [TODO](../TODO.md)
-

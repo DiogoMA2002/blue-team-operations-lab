@@ -18,14 +18,16 @@ detection validation, investigation cases and remediation follow-up.
 
 ## Architecture Scope
 
-The inherited Proxmox host, OPNsense VM 102 and internal `vmbr1` bridge
-provide the base. The active lab will add:
+The Proxmox host, OPNsense VM 102 and internal vmbr1 bridge provide the
+foundation. Active Directory/DNS, Elastic SIEM and Fleet management are deployed.
+Both enrolled agents recovered after a controlled SIEM01 reboot. The next
+validation is a controlled DC01 event arriving in Kibana.
 
-- Active Directory Domain Services and DNS
-- One or more domain-joined Windows endpoints
-- A SIEM platform with KQL query capability
-- Endpoint, Windows security and firewall telemetry
-- Controlled, authorized test scenarios only
+Planned outcomes remain:
+
+- Domain-joined Windows endpoints and validated endpoint telemetry.
+- Searchable identity, Windows security and firewall collection.
+- Controlled, authorized detection tests and complete investigations.
 
 Personal home-LAN and media services remain outside the blue-team lab scope.
 

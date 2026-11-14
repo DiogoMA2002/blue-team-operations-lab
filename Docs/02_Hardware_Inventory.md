@@ -12,7 +12,6 @@ status: active
 | System storage | 500 GB WD_BLACK SN710 SSD         | Proxmox and guest disks                |
 | Backup storage | 320 GB Maxtor, `Backup-320`       | Selected VM/CT backups                 |
 | Network        | One Gigabit NIC, unmanaged switch | Lab uplink; physical VLANs unavailable |
-|                |                                   |                                        |
 
 ## Constraints
 

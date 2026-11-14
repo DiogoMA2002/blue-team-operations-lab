@@ -1,4 +1,11 @@
-﻿# Blue Team Operations Lab
+---
+title: Blue Team Operations Lab
+tags: [blue-team, soc, portfolio]
+status: active
+updated: 2026-11-14
+---
+
+# Blue Team Operations Lab
 
 ## Overview
 
@@ -11,22 +18,24 @@ The goal is to demonstrate practical blue-team operations: collecting
 telemetry, detecting suspicious activity, investigating alerts, documenting
 findings and validating remediation.
 
-## Current Status — 13 November 2026
+## Current Status - 14 November 2026
 
-Phase A1 is in progress. The Elastic management plane is operational; DC01
-telemetry enrollment is the active task.
+Phase A1 is in progress. The Elastic management plane is operational, DC01 is
+enrolled and both agents recovered after one controlled SIEM01 reboot.
 
-- OPNsense VM 102 provides the isolated-lab gateway on `10.10.10.1`.
-- `DC01.lab.internal` is deployed on `vmbr1` as the first domain controller
-  for `lab.internal` (`LAB`), with audited AD activity and a baseline backup.
-- `SIEM01` (`10.10.10.20`) runs Ubuntu Server, Elasticsearch, Kibana and a
-  healthy Fleet Server.
-- Kibana access is restricted through OPNsense TCP `5601` NAT to the trusted
-  administration workstation only; Elasticsearch ports are not exposed.
-- The `Windows Domain Controllers - Baseline` Fleet policy is configured with
-  System, PowerShell, PowerShell Operational and Windows Defender telemetry.
-- `DC01` has not yet been enrolled as an Elastic Agent; no endpoint/client VM
-  has been deployed.
+- OPNsense VM 102 provides the lab gateway at 10.10.10.1.
+- DC01.lab.internal is the deployed AD DS/DNS server, with audited local activity
+  and a baseline backup.
+- SIEM01 runs Elasticsearch, Kibana and Fleet Server. Both active agents are
+  Healthy in Kibana on their respective policy revision 3, with recent check-ins.
+- Kibana TCP 5601 administration is source-restricted through OPNsense; no
+  Elasticsearch or Fleet Server WAN port-forward is configured.
+- Windows collection is configured for DC01. A controlled event arriving in Kibana
+  is still unvalidated; no Windows client has been deployed.
+- The old Offline siem01 record is historical inventory; retirement is not confirmed.
+
+Current configuration: [Current Lab State](Docs/12_Current_Lab_State.md).
+Final Fleet diagnosis and recovery: [Troubleshooting](Docs/10_Troubleshooting.md#fleet-server-check-in-blocked-after-siem01-reboot).
 
 ## Lab Foundation
 

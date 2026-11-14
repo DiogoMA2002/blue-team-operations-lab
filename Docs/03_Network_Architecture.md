@@ -40,28 +40,36 @@ provides the lab's upstream Internet access through the home router.
 | --- | --- | --- |
 | NOS Router | `192.168.1.1/23` | Existing gateway, DHCP and DNS |
 | Proxmox (`pve01.lab.internal`) | `192.168.1.10/23` | Static |
-| OPNsense WAN | DHCP; `192.168.1.233/23` observed | Preserved future-lab VM |
+| OPNsense WAN | DHCP; `192.168.1.233/23` observed | Active lab firewall; address last observed |
 
 Confirm the router DHCP-pool boundaries before creating further assignments or reservations.
 
 ## Isolated Lab Network
 
-### `vmbr1` — Reserved internal bridge
+### `vmbr1` - Active internal lab bridge
 
-`vmbr1` has no physical ports, host IP address or gateway. It and OPNsense VM
-102 form the starting point for the Blue Team Operations Lab.
+vmbr1 has no physical ports, host IP address or gateway. OPNsense VM 102
+routes lab traffic through its WAN on vmbr0. Absence of a physical bridge port
+does not itself prove lab-to-home firewall isolation; rule validation is pending.
 
-### Target Blue Team Lab — `10.10.10.0/24`
+### Lab Network - 10.10.10.0/24
 
-| Role | Planned address | Purpose |
+| Role | Address | Deployment / purpose |
 | --- | --- | --- |
-| OPNsense LAN | `10.10.10.1` | Gateway, firewall and future log source |
-| AD DS / DNS | `10.10.10.10` | Identity, DNS and directory telemetry |
-| SIEM | `10.10.10.20` | Central log analysis and KQL workflow |
-| Windows endpoint | DHCP or reserved address | Endpoint telemetry and controlled tests |
+| OPNsense LAN | 10.10.10.1 | Deployed gateway; future firewall-log source |
+| DC01 AD DS / DNS | 10.10.10.10 | Deployed identity/DNS; local audit baseline configured |
+| SIEM01 | 10.10.10.20 | Deployed Elastic Stack/Fleet; controlled DC01 ingestion pending |
+| Windows endpoint | DHCP or reserved address, not assigned here | Planned; not deployed |
 
-All target addresses require confirmation during Phase A1; this table is a
-design baseline, not a record of deployed services.
+SIEM01 DNS uses OPNsense Unbound, forwarding lab.internal to DC01 and resolving
+external names independently. Domain clients/DC01 use AD DNS. Service/policy
+details and validation boundaries: [Current Lab State](12_Current_Lab_State.md).
+
+Kibana administration uses source-restricted OPNsense WAN TCP 5601 DNAT to SIEM01,
+from the trusted home-LAN workstation only. This is distinct from a port-forward
+on the home router: no Internet-facing router forward is part of the design.
+No OPNsense WAN NAT is configured for Elasticsearch 9200/9300 or Fleet 8220/8221.
+TCP 8221 is local communication on SIEM01, not an agent-facing service.
 
 ## Blue Team Network Objectives
 
@@ -72,7 +80,7 @@ design baseline, not a record of deployed services.
 
 ## Project Boundary
 
-The Blue Team Operations Lab will use the Proxmox host, `vmbr1` and OPNsense VM
+The Blue Team Operations Lab uses the Proxmox host, `vmbr1` and OPNsense VM
 102 for Active Directory, SIEM, telemetry, investigations and controlled tests.
 
 ## Related Notes
@@ -83,4 +91,3 @@ The Blue Team Operations Lab will use the Proxmox host, `vmbr1` and OPNsense VM
 - [SIEM and Telemetry](07_SIEM_and_Telemetry.md)
 - [Project Roadmap](08_Project_Roadmap.md)
 - [TODO](../TODO.md)
-

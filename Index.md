@@ -23,6 +23,9 @@ status: active
 
 ## Operational Records
 
+- [Current Lab State](Docs/12_Current_Lab_State.md)
+- [Documentation Review and Fleet Recovery Record](Docs/13_Documentation_Review.md)
+
 - [Implementation Log](Docs/09_Implementation_Log.md)
 - [Troubleshooting](Docs/10_Troubleshooting.md)
 - [Lessons Learned](Docs/11_Lessons_learned.md)
@@ -32,5 +35,3 @@ status: active
 ## Infrastructure Reference
 
 - [Hardware Inventory](Docs/02_Hardware_Inventory.md)
-- [Proxmox](Docs/04_Proxmox.md)
-- [OPNsense](Docs/05_OPNsense.md)
