@@ -78,6 +78,30 @@ TCP 8221 is local communication on SIEM01, not an agent-facing service.
 - Collect time-aligned identity, endpoint and firewall telemetry in the SIEM.
 - Do not add router port forwards; administration remains on the local network.
 
+## Deferred Decision - Test Source Placement (2026-11-14)
+
+**Status: proposed, not implemented.** Choose the test-source placement later,
+after measuring normal Proxmox/guest CPU, available RAM, swap activity and storage
+usage with OPNsense, DC01 and SIEM01 running. The host has 16 GiB physical RAM;
+no extra attacker/target VM resources have been reserved or validated.
+
+| Option | Scenario and trade-off |
+| --- | --- |
+| Separate test VM/network behind OPNsense | Simulate an external/untrusted zone with firewall visibility while keeping the exercise virtual and isolated; uses additional host resources and network configuration |
+| Test VM inside the existing lab subnet | Simulate an already-compromised host/internal threat; simpler network setup, but same-subnet traffic may bypass OPNsense |
+| Physical laptop on the home-LAN side of OPNsense WAN | Offload the test source from Proxmox; requires deliberately scoped access to a dedicated lab target, not unrestricted access to AD/SIEM |
+
+For a published-service scenario, consider a disposable training target in a
+separate DMZ/test segment; a normal PHP page alone is not an exploitation scenario.
+Restrict any proposed NAT/firewall access to the laptop source and required test
+service. Do not expose DC01, SIEM management or vulnerable applications to the
+Internet, and do not add ISP-router port forwards for this local exercise.
+
+Decision criteria: resource headroom for the source AND target, desired internal
+versus perimeter scenario, firewall/endpoint telemetry, isolation and rollback.
+Prefer the separate virtual test zone if measured capacity allows; the laptop
+remains an alternative if host resources are constrained. No option is selected.
+
 ## Project Boundary
 
 The Blue Team Operations Lab uses the Proxmox host, `vmbr1` and OPNsense VM

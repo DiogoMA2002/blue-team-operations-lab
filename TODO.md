@@ -49,6 +49,8 @@ does not represent a second running VM. Details: [Troubleshooting](Docs/10_Troub
 
 ## A2-A6 Preparation
 
+- [ ] Decide later between separate test-network VM, internal lab VM or physical laptop after measuring resource headroom and selecting the scenario; see [deferred network decision](Docs/03_Network_Architecture.md#deferred-decision---test-source-placement-2026-11-14)
+
 - [ ] Build the KQL library and identity/phishing cases
 - [ ] Create tested detections, a triage playbook, escalation and handover
 - [ ] Integrate OPNsense firewall and PCAP evidence

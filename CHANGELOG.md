@@ -23,6 +23,10 @@ updated: 2026-11-14
 
 ### Documentation
 
+- Recorded a deferred test-source placement decision (separate virtual test zone,
+  internal VM or physical laptop), contingent on measured resource usage and
+  scenario requirements. Planning only; no VM, NAT or firewall changes made.
+
 - Recorded final diagnosis, evidence, limitations and historical Agent IDs.
 - Completed the user-approved consolidation: current baselines, chronological
   implementation log, one Fleet incident, concise lessons and updated TODO/roadmap.
