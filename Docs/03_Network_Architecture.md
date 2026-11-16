@@ -6,7 +6,6 @@ tags:
   - architecture
 status: active
 ---
-
 # Network Architecture
 
 ## Target Blue Team Architecture
