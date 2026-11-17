@@ -3,7 +3,6 @@ title: Proxmox
 tags: [blue-team, proxmox, virtualization]
 status: active
 ---
-
 # Proxmox
 
 ## Purpose
